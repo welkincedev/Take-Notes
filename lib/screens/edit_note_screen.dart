@@ -1,23 +1,39 @@
 import 'package:flutter/material.dart';
 import '../services/note_service.dart';
 
-class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({super.key});
+class EditNoteScreen extends StatefulWidget {
+  final String noteId;
+  final String oldTitle;
+  final String oldContent;
+
+  const EditNoteScreen({
+    super.key,
+    required this.noteId,
+    required this.oldTitle,
+    required this.oldContent,
+  });
 
   @override
-  State<AddNoteScreen> createState() => _AddNoteScreenState();
+  State<EditNoteScreen> createState() => _EditNoteScreenState();
 }
 
-class _AddNoteScreenState extends State<AddNoteScreen> {
-  final titleController = TextEditingController();
-  final contentController = TextEditingController();
+class _EditNoteScreenState extends State<EditNoteScreen> {
+  late TextEditingController titleController;
+  late TextEditingController contentController;
 
   final NoteService noteService = NoteService();
 
   @override
+  void initState() {
+    super.initState();
+    titleController = TextEditingController(text: widget.oldTitle);
+    contentController = TextEditingController(text: widget.oldContent);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Note")),
+      appBar: AppBar(title: const Text("Edit Note")),
 
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -39,14 +55,15 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
             ElevatedButton(
               onPressed: () async {
-                await noteService.addNote(
+                await noteService.updateNote(
+                  widget.noteId,
                   titleController.text.trim(),
                   contentController.text.trim(),
                 );
 
                 Navigator.pop(context);
               },
-              child: const Text("Save Note"),
+              child: const Text("Update Note"),
             ),
           ],
         ),
