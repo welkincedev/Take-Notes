@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'screens/signup_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  runApp(const MyApp());
+  runApp(const TakeNotesApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TakeNotesApp extends StatelessWidget {
+  const TakeNotesApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Take Notes',
       debugShowCheckedModeBanner: false,
-      home: const Scaffold(
-        body: Center(
-          child: Text("Firebase Connected ✅", style: TextStyle(fontSize: 22)),
-        ),
-      ),
+      title: "Take Notes",
+      home: const SignupScreen(),
     );
   }
 }
