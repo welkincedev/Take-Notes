@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'login_screen.dart';
 import 'home_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -13,7 +12,6 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
   final AuthService _authService = AuthService();
 
   void signup() async {
@@ -26,7 +24,7 @@ class _SignupScreenState extends State<SignupScreen> {
       if (user != null && mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => HomeScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
     } catch (e) {
@@ -48,24 +46,16 @@ class _SignupScreenState extends State<SignupScreen> {
               controller: emailController,
               decoration: const InputDecoration(labelText: "Email"),
             ),
+            const SizedBox(height: 12),
             TextField(
               controller: passwordController,
               decoration: const InputDecoration(labelText: "Password"),
               obscureText: true,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
             ElevatedButton(
               onPressed: signup,
               child: const Text("Create Account"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                );
-              },
-              child: const Text("Already have an account? Login"),
             ),
           ],
         ),

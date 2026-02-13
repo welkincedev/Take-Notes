@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'screens/signup_screen.dart';
+
+import 'screens/login_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Firebase Init
   await Firebase.initializeApp();
-  runApp(const TakeNotesApp());
+
+  runApp(const MyApp());
 }
 
-class TakeNotesApp extends StatelessWidget {
-  const TakeNotesApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Take Notes",
-      home: const SignupScreen(),
+      title: "Firebase Notes App",
+      theme: AppTheme.neonDarkTheme,
+      home: const LoginScreen(),
     );
   }
 }

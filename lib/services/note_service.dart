@@ -1,40 +1,47 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../models/note_model.dart';
+
 class NoteService {
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  String get uid => _auth.currentUser!.uid;
+  String? get uid => FirebaseAuth.instance.currentUser?.uid;
 
-  // Add Note
+  // ✅ Add Note
   Future<void> addNote(String title, String content) async {
-    await _firestore.collection("notes").add({
+    await _db.collection("users").doc(uid).collection("notes").add({
       "title": title,
       "content": content,
-      "userId": uid,
       "createdAt": Timestamp.now(),
     });
   }
 
-  // Delete Note
-  Future<void> deleteNote(String noteId) async {
-    await _firestore.collection("notes").doc(noteId).delete();
-  }
-
-  // Update Note
-  Future<void> updateNote(String noteId, String title, String content) async {
-    await _firestore.collection("notes").doc(noteId).update({
+  // ✅ Update Note
+  Future<void> updateNote(String id, String title, String content) async {
+    await _db.collection("users").doc(uid).collection("notes").doc(id).update({
       "title": title,
       "content": content,
     });
   }
 
-  // Stream Notes
-  Stream<QuerySnapshot> getNotesStream() {
-    return _firestore
+  // ✅ Delete Note
+  Future<void> deleteNote(String id) async {
+    await _db.collection("users").doc(uid).collection("notes").doc(id).delete();
+  }
+
+  // ✅ Stream Notes
+  Stream<List<NoteModel>> getNotes() {
+    return _db
+        .collection("users")
+        .doc(uid)
         .collection("notes")
-        .where("userId", isEqualTo: uid)
-        .snapshots();
+        .orderBy("createdAt", descending: true)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((doc) => NoteModel.fromMap(doc.id, doc.data()))
+              .toList();
+        });
   }
 }

@@ -1,46 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/note_service.dart';
-import 'add_note_screen.dart';
+import '../services/auth_service.dart';
+import '../models/note_model.dart';
 import 'edit_note_screen.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
-
-  final NoteService noteService = NoteService();
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Take Notes"), centerTitle: true),
+    final NoteService noteService = NoteService();
+    final AuthService authService = AuthService();
 
-      // Add Button
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("My Neon Notes"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await authService.logout();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            },
+          ),
+        ],
+      ),
+
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AddNoteScreen()),
+            MaterialPageRoute(builder: (_) => const EditNoteScreen()),
           );
         },
       ),
 
-      // Notes List
-      body: StreamBuilder<QuerySnapshot>(
-        stream: noteService.getNotesStream(),
+      body: StreamBuilder<List<NoteModel>>(
+        stream: noteService.getNotes(),
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text("Something went wrong"));
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final notes = snapshot.data!.docs;
+          final notes = snapshot.data!;
 
           if (notes.isEmpty) {
-            return const Center(child: Text("No notes yet. Tap + to add one."));
+            return const Center(
+              child: Text(
+                "No notes yet.\nTap + to create one!",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white60),
+              ),
+            );
           }
 
           return ListView.builder(
@@ -49,34 +65,33 @@ class HomeScreen extends StatelessWidget {
               final note = notes[index];
 
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 child: ListTile(
-                  title: Text(note["title"]),
+                  title: Text(
+                    note.title,
+                    style: const TextStyle(
+                      color: Color(0xFF00E5FF),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   subtitle: Text(
-                    note["content"],
+                    note.content,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.white70),
                   ),
-
-                  // Tap → Edit
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => EditNoteScreen(
-                          noteId: note.id,
-                          oldTitle: note["title"],
-                          oldContent: note["content"],
-                        ),
+                        builder: (_) => EditNoteScreen(note: note),
                       ),
                     );
                   },
-
-                  // Delete Button
                   trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () async {
-                      await noteService.deleteNote(note.id);
+                    icon: const Icon(Icons.delete, color: Colors.redAccent),
+                    onPressed: () {
+                      noteService.deleteNote(note.id);
                     },
                   ),
                 ),
