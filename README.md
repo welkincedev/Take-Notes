@@ -7,7 +7,7 @@ This project is developed stage-by-stage as part of a complete learning + portfo
 
 ## 🚀 Project Status
 
-✅ Completed up to **Stage 4**  
+✅ Completed up to **Stage 4**  going to **Stage 5**
 (Firebase Auth + Firestore Notes CRUD)
 
 ---
@@ -68,7 +68,7 @@ Users can now:
 
 ## 🔥 Upcoming Stages
 
-### 🚧 Stage 5 (Next)
+### 🚧 Stage 5
 Planned improvements:
 
 - 🎨 Beautiful Light Blue UI Theme
